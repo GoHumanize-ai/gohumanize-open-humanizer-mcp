@@ -1,0 +1,39 @@
+{
+  "name": "gohumanize-open-humanizer-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for the GoHumanize Open Humanizer: rewrites AI-styled text into natural human prose using the open Qwen3-4B fine-tune (hosted endpoint or local Ollama)",
+  "type": "module",
+  "bin": {
+    "gohumanize-open-humanizer-mcp": "server.js"
+  },
+  "files": [
+    "server.js"
+  ],
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "humanizer",
+    "text-rewriting",
+    "open-model",
+    "gohumanize"
+  ],
+  "author": "GoHumanize (https://gohumanize.ai)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoHumanize-ai/gohumanize-open-humanizer-mcp.git"
+  },
+  "homepage": "https://gohumanize.ai/research",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "mcpName": "io.github.GoHumanize-ai/gohumanize-open-humanizer-mcp"
+}
