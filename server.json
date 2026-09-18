@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.GoHumanize-ai/gohumanize-open-humanizer-mcp",
+  "title": "GoHumanize Open Humanizer",
+  "description": "Rewrite AI-styled text into natural human prose with an open Qwen3-4B fine-tune trained on public-domain books.",
+  "websiteUrl": "https://gohumanize.ai/research",
+  "repository": {
+    "url": "https://github.com/GoHumanize-ai/gohumanize-open-humanizer-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "gohumanize-open-humanizer-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "OPEN_HUMANIZER_URL",
+          "description": "OpenAI-compatible base URL serving the model (defaults to the public demo endpoint)",
+          "isRequired": false
+        },
+        {
+          "name": "OPEN_HUMANIZER_API_KEY",
+          "description": "Bearer token for the endpoint, if it requires one",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
