@@ -29,7 +29,7 @@ if (res.isError) {
   const noEndpoint =
     !process.env.OPEN_HUMANIZER_URL &&
     !process.env.OPEN_HUMANIZER_API_KEY &&
-    /refused the request \((401|403)\)/.test(message);
+    /No endpoint configured|refused the request \((401|403)\)/.test(message);
   if (!noEndpoint) throw new Error(message);
   console.log('humanize_text: SKIPPED, no endpoint configured');
   console.log('  the server reported:', message.split('\n')[0]);
