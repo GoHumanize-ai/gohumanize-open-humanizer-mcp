@@ -45,8 +45,23 @@ from the production models used by GoHumanize.ai.
 }
 ```
 
-By default the server calls the public demo endpoint. To use your own copy of
-the model, point it at any OpenAI-compatible server:
+## Which endpoint
+
+The model runs wherever you point the server. **Running it yourself needs no key**
+and is the recommended setup:
+
+```bash
+ollama pull hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M
+export OPEN_HUMANIZER_URL=http://localhost:11434/v1
+export OPEN_HUMANIZER_MODEL=hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M
+```
+
+The endpoint the server falls back to is the one behind the browser demo on
+[gohumanize.ai/research](https://gohumanize.ai/research). It is rate-limited and
+requires `OPEN_HUMANIZER_API_KEY`, so it is not open for general use; to try the
+model without installing anything, use the demo on that page.
+
+Any OpenAI-compatible server works:
 
 ```json
 "env": {
