@@ -12,9 +12,18 @@
 // This is an educational open model. It rewrites style; it makes no claim
 // about AI detectors.
 
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
+
+// package.json is the single source of truth for the version reported to clients.
+const { version } = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'package.json'), 'utf8'),
+);
 
 const DEFAULT_URL = 'https://gohumanize--gohumanize-open-humanizer-serve-serve.modal.run/v1';
 const BASE_URL = (process.env.OPEN_HUMANIZER_URL || DEFAULT_URL).replace(/\/$/, '');
@@ -22,6 +31,11 @@ const MODEL = process.env.OPEN_HUMANIZER_MODEL || 'gohumanize-open-humanizer';
 const API_KEY = process.env.OPEN_HUMANIZER_API_KEY || '';
 const TIMEOUT_MS = Number(process.env.OPEN_HUMANIZER_TIMEOUT_MS || 120000);
 const MAX_WORDS = 1500;
+
+// The hosted endpoint is not open to the public: it is the one behind the browser
+// demo and requires a key. Say so usefully instead of surfacing a bare 401.
+const GUIDE =
+  'The hosted demo endpoint needs a key. Either run the model yourself, which needs no key:\n  ollama pull hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M\n  export OPEN_HUMANIZER_URL=http://localhost:11434/v1\n  export OPEN_HUMANIZER_MODEL=hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M\nor set OPEN_HUMANIZER_API_KEY, or try the model in a browser at https://gohumanize.ai/research';
 
 // Same system prompt the model was trained with.
 const SYSTEM_PROMPT =
@@ -61,6 +75,11 @@ async function humanize(input, temperature) {
     });
     if (!res.ok) {
       const body = (await res.text()).slice(0, 300);
+      if (res.status === 401 || res.status === 403) {
+        throw new Error(
+          `endpoint refused the request (${res.status}).\n${GUIDE}`,
+        );
+      }
       throw new Error(`endpoint returned ${res.status}: ${body}`);
     }
     const data = await res.json();
@@ -72,7 +91,7 @@ async function humanize(input, temperature) {
   }
 }
 
-const server = new McpServer({ name: 'gohumanize-open-humanizer', version: '0.1.0' });
+const server = new McpServer({ name: 'gohumanize-open-humanizer', version });
 
 server.registerTool(
   'humanize_text',
