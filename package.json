@@ -1,6 +1,6 @@
 {
   "name": "gohumanize-open-humanizer-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MCP server for the GoHumanize Open Humanizer: rewrites AI-styled text into natural human prose using the open Qwen3-4B fine-tune (hosted endpoint or local Ollama)",
   "type": "module",
   "bin": {
