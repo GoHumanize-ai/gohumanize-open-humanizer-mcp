@@ -11,8 +11,19 @@ Tools:
 - `about_open_humanizer` what the model is and which endpoint is in use.
 
 The model is educational and makes no claim about AI detectors. It is separate
-from the production models used by GoHumanize.ai. Model, dataset, training code
-and the full write-up: https://gohumanize.ai/research
+from the production models used by GoHumanize.ai.
+
+## Links
+
+- Project page: https://gohumanize.ai/research
+- Model weights, LoRA adapter and GGUF builds (Hugging Face): https://huggingface.co/gohumanize/gohumanize-open-humanizer
+- Dataset (Hugging Face, CC-BY 4.0): https://huggingface.co/datasets/gohumanize/gohumanize-open-humanizer-dataset
+- Code, pipeline and write-up (GitHub): https://github.com/GoHumanize-ai/gohumanize-open-humanizer
+- Paper: https://github.com/GoHumanize-ai/gohumanize-open-humanizer/blob/main/docs/paper.md
+- Archived release with DOI (Zenodo): https://doi.org/10.5281/zenodo.22843083
+- Python client and CLI (PyPI): https://pypi.org/project/gohumanize-open-humanizer/
+- MCP server (npm): https://www.npmjs.com/package/gohumanize-open-humanizer-mcp, source: https://github.com/GoHumanize-ai/gohumanize-open-humanizer-mcp
+- Training run (Weights & Biases): https://wandb.ai/gohumanize/gohumanize-open-humanizer/runs/95wi8tdg
 
 ## Use
 
