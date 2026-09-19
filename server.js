@@ -116,6 +116,11 @@ server.registerTool(
   async ({ text: input, temperature = 0.7 }) => {
     const words = input.trim().split(/\s+/).length;
     if (words > MAX_WORDS) return errorText(`Input is ${words} words; the limit is ${MAX_WORDS}.`);
+    // No key and the default endpoint: the request will be refused, but only after
+    // the hosted container has booted, which can take a couple of minutes. Say so now.
+    if (!API_KEY && BASE_URL === DEFAULT_URL) {
+      return errorText(`No endpoint configured. ${GUIDE}`);
+    }
     try {
       const paragraphs = input.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
       if (paragraphs.length <= 1 || words <= 400) return text(await humanize(input.trim(), temperature));
