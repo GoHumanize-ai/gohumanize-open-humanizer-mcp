@@ -29,7 +29,10 @@ const DEFAULT_URL = 'https://gohumanize--gohumanize-open-humanizer-serve-serve.m
 const BASE_URL = (process.env.OPEN_HUMANIZER_URL || DEFAULT_URL).replace(/\/$/, '');
 const MODEL = process.env.OPEN_HUMANIZER_MODEL || 'gohumanize-open-humanizer';
 const API_KEY = process.env.OPEN_HUMANIZER_API_KEY || '';
-const TIMEOUT_MS = Number(process.env.OPEN_HUMANIZER_TIMEOUT_MS || 120000);
+// 300 s, not 120: the hosted endpoint runs on a GPU that scales to zero, and a cold
+// start plus generation can exceed two minutes. Note that MCP clients apply their own
+// timeout (often 60 s), so a local endpoint is the reliable choice.
+const TIMEOUT_MS = Number(process.env.OPEN_HUMANIZER_TIMEOUT_MS || 300000);
 const MAX_WORDS = 1500;
 
 // The hosted endpoint is not open to the public: it is the one behind the browser

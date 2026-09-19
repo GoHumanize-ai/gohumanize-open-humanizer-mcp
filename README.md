@@ -56,6 +56,12 @@ export OPEN_HUMANIZER_URL=http://localhost:11434/v1
 export OPEN_HUMANIZER_MODEL=hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M
 ```
 
+**The hosted endpoint sleeps when idle.** The first request after a quiet period waits
+for a GPU cold start, measured at one to two minutes; afterwards a rewrite takes a
+second or two. MCP clients apply their own timeout, often 60 seconds, so the first
+call through a client may fail even with a valid key and succeed on retry. Running the
+model locally avoids this entirely.
+
 The endpoint the server falls back to is the one behind the browser demo on
 [gohumanize.ai/research](https://gohumanize.ai/research). It is rate-limited and
 requires `OPEN_HUMANIZER_API_KEY`, so it is not open for general use; to try the

@@ -8,12 +8,12 @@
     "url": "https://github.com/GoHumanize-ai/gohumanize-open-humanizer-mcp",
     "source": "github"
   },
-  "version": "0.1.3",
+  "version": "0.1.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "gohumanize-open-humanizer-mcp",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "transport": {
         "type": "stdio"
       },
