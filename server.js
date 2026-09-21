@@ -38,7 +38,7 @@ const MAX_WORDS = 1500;
 // The hosted endpoint is not open to the public: it is the one behind the browser
 // demo and requires a key. Say so usefully instead of surfacing a bare 401.
 const GUIDE =
-  'The hosted demo endpoint needs a key. Either run the model yourself, which needs no key:\n  ollama pull hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M\n  export OPEN_HUMANIZER_URL=http://localhost:11434/v1\n  export OPEN_HUMANIZER_MODEL=hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M\nor set OPEN_HUMANIZER_API_KEY, or try the model in a browser at https://gohumanize.ai/research';
+  'The hosted demo endpoint needs a key. Either run the model yourself, which needs no key:\n  ollama pull hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M\n  export OPEN_HUMANIZER_URL=http://localhost:11434/v1\n  export OPEN_HUMANIZER_MODEL=hf.co/gohumanize/gohumanize-open-humanizer:Q4_K_M\nor set OPEN_HUMANIZER_API_KEY, or try the model in a browser at https://gohumanize.ai/open-model';
 
 // Same system prompt the model was trained with.
 const SYSTEM_PROMPT =
@@ -150,7 +150,7 @@ server.registerTool(
       [
         'GoHumanize Open Humanizer (educational open model, Apache-2.0).',
         'Base: Qwen3-4B, fine-tuned with QLoRA on 2,000 pairs of AI-styled text -> public-domain human prose (Project Gutenberg).',
-        'Dataset (CC-BY 4.0), model weights, GGUF, training code, evaluation and a full write-up are linked from https://gohumanize.ai/research',
+        'Dataset (CC-BY 4.0), model weights, GGUF, training code, evaluation and a full write-up are linked from https://gohumanize.ai/open-model',
         'It is separate from the production models used by GoHumanize.ai and makes no claim about passing AI detectors.',
         `This server is calling: ${BASE_URL} (model "${MODEL}").`,
       ].join('\n'),

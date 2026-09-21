@@ -22,7 +22,7 @@ from the production models used by GoHumanize.ai.
 
 | Resource | Link |
 | --- | --- |
-| Project page and browser demo | [gohumanize.ai/research](https://gohumanize.ai/research) |
+| Project page and browser demo | [gohumanize.ai/open-model](https://gohumanize.ai/open-model) |
 | Model weights, LoRA adapter, GGUF builds | [gohumanize/gohumanize-open-humanizer](https://huggingface.co/gohumanize/gohumanize-open-humanizer) |
 | Dataset, 2,200 pairs (CC-BY 4.0) | [gohumanize/gohumanize-open-humanizer-dataset](https://huggingface.co/datasets/gohumanize/gohumanize-open-humanizer-dataset) |
 | Code and full pipeline | [GoHumanize-ai/gohumanize-open-humanizer](https://github.com/GoHumanize-ai/gohumanize-open-humanizer) |
@@ -63,7 +63,7 @@ call through a client may fail even with a valid key and succeed on retry. Runni
 model locally avoids this entirely.
 
 The endpoint the server falls back to is the one behind the browser demo on
-[gohumanize.ai/research](https://gohumanize.ai/research). It is rate-limited and
+[gohumanize.ai/open-model](https://gohumanize.ai/open-model). It is rate-limited and
 requires `OPEN_HUMANIZER_API_KEY`, so it is not open for general use; to try the
 model without installing anything, use the demo on that page.
 
