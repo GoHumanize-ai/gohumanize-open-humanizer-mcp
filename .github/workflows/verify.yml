@@ -1,0 +1,38 @@
+name: Verify
+
+# No API key and no model needed: the server's own test exercises the tool list and
+# reports the missing endpoint, and the version has to match in both manifests.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - name: Server smoke test (tool list, argument handling, error message)
+        run: node test.js
+      - name: Same version in package.json and server.json
+        run: |
+          node -e "
+          const pkg = require('./package.json');
+          const server = require('./server.json');
+          const versions = [pkg.version, server.version, ...server.packages.map(p => p.version)];
+          if (new Set(versions).size !== 1) {
+            console.error('version mismatch:', versions.join(' '));
+            process.exit(1);
+          }
+          if (pkg.homepage !== server.websiteUrl) {
+            console.error('homepage differs from websiteUrl:', pkg.homepage, server.websiteUrl);
+            process.exit(1);
+          }
+          console.log('versions and links agree:', pkg.version);"
+      - name: Package contents
+        run: npm pack --dry-run
