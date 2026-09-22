@@ -18,11 +18,21 @@ Tools:
 The model is educational and makes no claim about AI detectors. It is separate
 from the production models used by GoHumanize.ai.
 
+
+## Several rewrites, best one returned
+
+The model learned from pre-1929 books, so on modern prose it sometimes plays safe and hands
+the text back almost unchanged. Each call asks the endpoint for five rewrites (generated in
+parallel, so the wait is the same) and keeps the one that moved furthest from the input while
+staying a sensible length. Set `OPEN_HUMANIZER_SAMPLES=1` for a single request.
+
+
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Project page and browser demo | [gohumanize.ai/open-model](https://gohumanize.ai/open-model) |
+| GoHumanize (the product this research comes from) | [gohumanize.ai](https://gohumanize.ai/) |
 | Model weights and GGUF builds (full fine-tune) | [gohumanize/gohumanize-open-humanizer](https://huggingface.co/gohumanize/gohumanize-open-humanizer) |
 | QLoRA version and LoRA adapter | [gohumanize/gohumanize-open-humanizer-qlora](https://huggingface.co/gohumanize/gohumanize-open-humanizer-qlora) |
 | Dataset, 2,200 pairs (CC-BY 4.0) | [gohumanize/gohumanize-open-humanizer-dataset](https://huggingface.co/datasets/gohumanize/gohumanize-open-humanizer-dataset) |
