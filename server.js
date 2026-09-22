@@ -33,6 +33,13 @@ const API_KEY = process.env.OPEN_HUMANIZER_API_KEY || '';
 // start plus generation can exceed two minutes. Note that MCP clients apply their own
 // timeout (often 60 s), so a local endpoint is the reliable choice.
 const TIMEOUT_MS = Number(process.env.OPEN_HUMANIZER_TIMEOUT_MS || 300000);
+// The model learned from pre-1929 books, so on modern prose it sometimes plays safe and
+// returns the input almost unchanged. Generate several rewrites (the server makes them in
+// parallel, so the wait is the same) and keep the one that moved furthest from the input.
+const SAMPLES = Math.max(1, Number(process.env.OPEN_HUMANIZER_SAMPLES || 5));
+const MIN_LENGTH_RATIO = 0.65;
+const MAX_LENGTH_RATIO = 1.4;
+const NEAR_COPY = 0.9;
 const MAX_WORDS = 1500;
 
 // The hosted endpoint is not open to the public: it is the one behind the browser
@@ -46,6 +53,37 @@ const SYSTEM_PROMPT =
   'length, concrete wording, natural rhythm, no filler transitions. Keep the meaning, the ' +
   'facts and the order of ideas. Return only the rewritten text.';
 
+// Share of the source's words that survive in the rewrite; 1 means unchanged.
+function wordOverlap(source, rewrite) {
+  const counts = new Map();
+  for (const w of source.toLowerCase().split(/\s+/).filter(Boolean)) {
+    counts.set(w, (counts.get(w) ?? 0) + 1);
+  }
+  const total = [...counts.values()].reduce((a, b) => a + b, 0);
+  if (!total) return 1;
+  let kept = 0;
+  for (const w of rewrite.toLowerCase().split(/\s+/).filter(Boolean)) {
+    const left = counts.get(w) ?? 0;
+    if (left > 0) {
+      counts.set(w, left - 1);
+      kept += 1;
+    }
+  }
+  return kept / total;
+}
+
+function pickMostRewritten(source, candidates) {
+  const usable = candidates.filter((c) => c && c.trim());
+  if (usable.length < 2) return usable[0] ?? '';
+  const sourceWords = source.split(/\s+/).filter(Boolean).length || 1;
+  const rightLength = usable.filter((c) => {
+    const ratio = c.split(/\s+/).filter(Boolean).length / sourceWords;
+    return ratio >= MIN_LENGTH_RATIO && ratio <= MAX_LENGTH_RATIO;
+  });
+  const pool = rightLength.length ? rightLength : usable;
+  return pool.reduce((best, c) => (wordOverlap(source, c) < wordOverlap(source, best) ? c : best));
+}
+
 function text(value) {
   return { content: [{ type: 'text', text: String(value) }] };
 }
@@ -55,6 +93,18 @@ function errorText(message) {
 }
 
 async function humanize(input, temperature) {
+  let candidates = await complete(input, temperature, SAMPLES);
+  // Servers that ignore `n` (Ollama, for one) answer with a single rewrite. Ask again,
+  // one request at a time, and stop as soon as one of them is a real rewrite.
+  const serverIgnoresN = candidates.length < 2;
+  for (let tries = 0; serverIgnoresN && SAMPLES > 1 && tries < SAMPLES - 1; tries += 1) {
+    if (wordOverlap(input, pickMostRewritten(input, candidates)) <= NEAR_COPY) break;
+    candidates = candidates.concat(await complete(input, temperature, 1));
+  }
+  return pickMostRewritten(input, candidates);
+}
+
+async function complete(input, temperature, samples) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -69,6 +119,7 @@ async function humanize(input, temperature) {
         temperature,
         top_p: 0.9,
         max_tokens: 1500,
+        ...(samples > 1 ? { n: samples } : {}),
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: input },
@@ -86,9 +137,12 @@ async function humanize(input, temperature) {
       throw new Error(`endpoint returned ${res.status}: ${body}`);
     }
     const data = await res.json();
-    const out = data?.choices?.[0]?.message?.content;
-    if (typeof out !== 'string' || !out.trim()) throw new Error('empty response from model');
-    return out.trim();
+    const outs = (data?.choices ?? [])
+      .map((c) => c?.message?.content)
+      .filter((c) => typeof c === 'string' && c.trim())
+      .map((c) => c.trim());
+    if (!outs.length) throw new Error('empty response from model');
+    return outs;
   } finally {
     clearTimeout(timer);
   }
@@ -113,10 +167,10 @@ server.registerTool(
         .min(0)
         .max(1.5)
         .optional()
-        .describe('Sampling temperature, default 0.7; lower is more literal'),
+        .describe('Sampling temperature, default 0.9; lower is more literal'),
     },
   },
-  async ({ text: input, temperature = 0.7 }) => {
+  async ({ text: input, temperature = 0.9 }) => {
     const words = input.trim().split(/\s+/).length;
     if (words > MAX_WORDS) return errorText(`Input is ${words} words; the limit is ${MAX_WORDS}.`);
     // No key and the default endpoint: the request will be refused, but only after
@@ -149,7 +203,7 @@ server.registerTool(
     text(
       [
         'GoHumanize Open Humanizer (educational open model, Apache-2.0).',
-        'Base: Qwen3-4B, fine-tuned with QLoRA on 2,000 pairs of AI-styled text -> public-domain human prose (Project Gutenberg).',
+        'Base: Qwen3-4B, fully fine-tuned on 2,000 pairs of AI-styled text -> public-domain human prose (Project Gutenberg); a QLoRA version is published alongside it.',
         'Dataset (CC-BY 4.0), model weights, GGUF, training code, evaluation and a full write-up are linked from https://gohumanize.ai/open-model',
         'It is separate from the production models used by GoHumanize.ai and makes no claim about passing AI detectors.',
         `This server is calling: ${BASE_URL} (model "${MODEL}").`,
