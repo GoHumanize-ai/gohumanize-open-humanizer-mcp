@@ -8,7 +8,11 @@ const SRC = 'It is worth noting that the committee ultimately reached a consensu
 const REWRITE = 'The committee argued the point for hours, and in the end they agreed on it.';
 // Changes more than REWRITE but puts words in quotes: only the quote rule can reject it.
 const INVENTED = 'Hours of argument, then a deal. \u201cWe finally agreed on it,\u201d one member said.';
-const calls = { multi: 0, single: 0, quoted: 0 };
+// Number case: LOST changes more than KEPT but drops the figures.
+const NUM_SRC = 'It is worth noting that the agency ultimately allocated $2.4 million to 12 projects in 2025.';
+const LOST = 'The agency gave a few million dollars to a dozen projects last year, after a long review of them.';
+const KEPT = 'Last year, 2025, the agency put $2.4 million into 12 projects after its review.';
+const calls = { multi: 0, single: 0, quoted: 0, numbers: 0 };
 
 function server(kind, port) {
   return new Promise((resolve) => {
@@ -23,6 +27,8 @@ function server(kind, port) {
         if (kind === 'multi') {
           if (parsed.n !== 5) throw new Error('expected n=5, got ' + parsed.n);
           outs = [input, input, REWRITE, input, input];
+        } else if (kind === 'numbers') {
+          outs = [LOST, input, KEPT, input, input];
         } else if (kind === 'quoted') {
           outs = [INVENTED, '\u201c' + REWRITE + '\u201d', input, input, input];
         } else {
@@ -37,7 +43,7 @@ function server(kind, port) {
   });
 }
 
-async function run(port, kind) {
+async function run(port, kind, text = SRC) {
   const transport = new StdioClientTransport({
     command: 'node',
     args: ['server.js'],
@@ -45,7 +51,7 @@ async function run(port, kind) {
   });
   const client = new Client({ name: 'test', version: '0' });
   await client.connect(transport);
-  const out = await client.callTool({ name: 'humanize_text', arguments: { text: SRC } });
+  const out = await client.callTool({ name: 'humanize_text', arguments: { text } });
   await client.close();
   return out.content[0].text;
 }
@@ -53,6 +59,7 @@ async function run(port, kind) {
 const s1 = await server('multi', 8161);
 const s2 = await server('single', 8162);
 const s3 = await server('quoted', 8163);
+const s4 = await server('numbers', 8164);
 function check(ok, message, got) {
   console.log(ok ? message : `FAIL: ${got}`);
   if (!ok) process.exitCode = 1;
@@ -63,4 +70,6 @@ const b = await run(8162, 'single');
 check(b === REWRITE, `server ignoring n: got a rewrite after ${calls.single} requests`, b);
 const c = await run(8163, 'quoted');
 check(c === REWRITE, 'quotes: wrapping removed, invented quotes avoided', c);
-s1.close(); s2.close(); s3.close();
+const d = await run(8164, 'numbers', NUM_SRC);
+check(d === KEPT, 'numbers: rewrite keeping every figure preferred, never a copy', d);
+s1.close(); s2.close(); s3.close(); s4.close();
