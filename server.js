@@ -72,8 +72,29 @@ function wordOverlap(source, rewrite) {
   return kept / total;
 }
 
+// The model sometimes adds quotation marks the input did not have: it wraps the whole
+// answer in quotes, or turns a plain statement into a quote. Both put words in quotes that
+// nobody said, so drop quotes wrapped around the whole answer and prefer rewrites that do
+// not add any.
+const QUOTES = ['"', '\u201c', '\u201d'];
+const countQuotes = (t) => [...t].filter((ch) => QUOTES.includes(ch)).length;
+
+function unwrapQuotes(source, rewrite) {
+  const t = rewrite.trim();
+  if (
+    t.length > 2 &&
+    QUOTES.includes(t[0]) &&
+    QUOTES.includes(t.at(-1)) &&
+    !QUOTES.includes(source.trim()[0]) &&
+    countQuotes(t.slice(1, -1)) === 0
+  ) {
+    return t.slice(1, -1).trim();
+  }
+  return rewrite;
+}
+
 function pickMostRewritten(source, candidates) {
-  const usable = candidates.filter((c) => c && c.trim());
+  const usable = candidates.filter((c) => c && c.trim()).map((c) => unwrapQuotes(source, c));
   if (usable.length < 2) return usable[0] ?? '';
   const sourceWords = source.split(/\s+/).filter(Boolean).length || 1;
   const rightLength = usable.filter((c) => {
@@ -81,7 +102,9 @@ function pickMostRewritten(source, candidates) {
     return ratio >= MIN_LENGTH_RATIO && ratio <= MAX_LENGTH_RATIO;
   });
   const pool = rightLength.length ? rightLength : usable;
-  return pool.reduce((best, c) => (wordOverlap(source, c) < wordOverlap(source, best) ? c : best));
+  const noNewQuotes = pool.filter((c) => countQuotes(c) <= countQuotes(source));
+  const choice = noNewQuotes.length ? noNewQuotes : pool;
+  return choice.reduce((best, c) => (wordOverlap(source, c) < wordOverlap(source, best) ? c : best));
 }
 
 function text(value) {
