@@ -93,18 +93,39 @@ function unwrapQuotes(source, rewrite) {
   return rewrite;
 }
 
+// About a quarter of rewrites of number-heavy text drop a figure. A rewrite that keeps
+// every number of the source is preferred, but only among real rewrites: a near-copy
+// keeps every number without trying.
+function numbers(t) {
+  return new Set(
+    (t.match(/\d[\d,.]*/g) ?? []).map((n) => n.replace(/[.,]+$/, '').replaceAll(',', '')).filter(Boolean)
+  );
+}
+
+// The candidates that pass `keep`, or all of them if none does.
+function prefer(pool, keep) {
+  const kept = pool.filter(keep);
+  return kept.length ? kept : pool;
+}
+
+// The candidate that changed the most, among those of a sensible length, preferring in
+// turn: no added quotation marks, a real rewrite, every number of the source kept.
 function pickMostRewritten(source, candidates) {
   const usable = candidates.filter((c) => c && c.trim()).map((c) => unwrapQuotes(source, c));
   if (usable.length < 2) return usable[0] ?? '';
   const sourceWords = source.split(/\s+/).filter(Boolean).length || 1;
-  const rightLength = usable.filter((c) => {
+  const sourceNumbers = numbers(source);
+  let pool = prefer(usable, (c) => {
     const ratio = c.split(/\s+/).filter(Boolean).length / sourceWords;
     return ratio >= MIN_LENGTH_RATIO && ratio <= MAX_LENGTH_RATIO;
   });
-  const pool = rightLength.length ? rightLength : usable;
-  const noNewQuotes = pool.filter((c) => countQuotes(c) <= countQuotes(source));
-  const choice = noNewQuotes.length ? noNewQuotes : pool;
-  return choice.reduce((best, c) => (wordOverlap(source, c) < wordOverlap(source, best) ? c : best));
+  pool = prefer(pool, (c) => countQuotes(c) <= countQuotes(source));
+  pool = prefer(pool, (c) => wordOverlap(source, c) <= NEAR_COPY);
+  pool = prefer(pool, (c) => {
+    const kept = numbers(c);
+    return [...sourceNumbers].every((n) => kept.has(n));
+  });
+  return pool.reduce((best, c) => (wordOverlap(source, c) < wordOverlap(source, best) ? c : best));
 }
 
 function text(value) {
