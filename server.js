@@ -34,7 +34,7 @@ const API_KEY = process.env.OPEN_HUMANIZER_API_KEY || '';
 // timeout (often 60 s), so a local endpoint is the reliable choice.
 const TIMEOUT_MS = Number(process.env.OPEN_HUMANIZER_TIMEOUT_MS || 300000);
 // On modern prose the model sometimes plays safe and returns the input almost unchanged
-// (about one try in six for version 2). Generate several rewrites (the server makes them in
+// (about one try in six). Generate several rewrites (the server makes them in
 // parallel, so the wait is the same) and keep the one that moved furthest from the input.
 const SAMPLES = Math.max(1, Number(process.env.OPEN_HUMANIZER_SAMPLES || 5));
 const MIN_LENGTH_RATIO = 0.65;
@@ -203,7 +203,7 @@ server.registerTool(
     text(
       [
         'GoHumanize Open Humanizer (educational open model, Apache-2.0).',
-        'Base: Qwen3-4B, fully fine-tuned (version 2) on 2,957 pairs of AI-styled text -> public-domain human prose from Project Gutenberg books and US federal agencies; the version 1 QLoRA build is published alongside it.',
+        'Base: Qwen3-4B, fully fine-tuned on 2,957 pairs of AI-styled text -> public-domain human prose from Project Gutenberg books and US federal agencies.',
         'Dataset (CC-BY 4.0), model weights, GGUF, training code, evaluation and a full write-up are linked from https://gohumanize.ai/open-model',
         'It is separate from the production models used by GoHumanize.ai and makes no claim about passing AI detectors.',
         `This server is calling: ${BASE_URL} (model "${MODEL}").`,
