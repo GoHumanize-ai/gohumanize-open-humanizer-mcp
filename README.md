@@ -21,8 +21,8 @@ from the production models used by GoHumanize.ai.
 
 ## Several rewrites, best one returned
 
-The model learned from pre-1929 books, so on modern prose it sometimes plays safe and hands
-the text back almost unchanged. Each call asks the endpoint for five rewrites (generated in
+On modern prose the model sometimes plays safe and hands the text back almost unchanged
+(about one try in six for version 2 of the model). Each call asks the endpoint for five rewrites (generated in
 parallel, so the wait is the same) and keeps the one that moved furthest from the input while
 staying a sensible length. Set `OPEN_HUMANIZER_SAMPLES=1` for a single request.
 
