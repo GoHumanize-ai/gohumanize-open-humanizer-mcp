@@ -28,7 +28,7 @@ function server(kind, port) {
           if (parsed.n !== 5) throw new Error('expected n=5, got ' + parsed.n);
           outs = [input, input, REWRITE, input, input];
         } else if (kind === 'numbers') {
-          outs = [LOST, input, KEPT, input, input];
+          outs = calls.numbers === 1 ? [LOST, input, KEPT, input, input] : [LOST, input, input, input, input];
         } else if (kind === 'quoted') {
           outs = [INVENTED, '\u201c' + REWRITE + '\u201d', input, input, input];
         } else {
@@ -71,5 +71,7 @@ check(b === REWRITE, `server ignoring n: got a rewrite after ${calls.single} req
 const c = await run(8163, 'quoted');
 check(c === REWRITE, 'quotes: wrapping removed, invented quotes avoided', c);
 const d = await run(8164, 'numbers', NUM_SRC);
-check(d === KEPT, 'numbers: rewrite keeping every figure preferred, never a copy', d);
+check(d === KEPT, 'numbers: a real rewrite keeping every figure wins', d);
+const e = await run(8164, 'numbers', NUM_SRC);
+check(e === NUM_SRC, 'numbers: keeping the figures beats a bigger change that drops them', e);
 s1.close(); s2.close(); s3.close(); s4.close();
