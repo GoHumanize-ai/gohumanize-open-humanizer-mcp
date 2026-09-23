@@ -22,7 +22,7 @@ from the production models used by GoHumanize.ai.
 ## Several rewrites, best one returned
 
 On modern prose the model sometimes plays safe and hands the text back almost unchanged
-(about one try in six for version 2 of the model). Each call asks the endpoint for five rewrites (generated in
+(about one try in six). Each call asks the endpoint for five rewrites (generated in
 parallel, so the wait is the same) and keeps the one that moved furthest from the input while
 staying a sensible length. Set `OPEN_HUMANIZER_SAMPLES=1` for a single request.
 
@@ -33,8 +33,7 @@ staying a sensible length. Set `OPEN_HUMANIZER_SAMPLES=1` for a single request.
 | --- | --- |
 | Project page and browser demo | [gohumanize.ai/open-model](https://gohumanize.ai/open-model) |
 | GoHumanize (the product this research comes from) | [gohumanize.ai](https://gohumanize.ai/) |
-| Model weights and GGUF builds (version 2 full fine-tune) | [gohumanize/gohumanize-open-humanizer](https://huggingface.co/gohumanize/gohumanize-open-humanizer) |
-| Version 1 QLoRA and LoRA adapter | [gohumanize/gohumanize-open-humanizer-qlora](https://huggingface.co/gohumanize/gohumanize-open-humanizer-qlora) |
+| Model weights and GGUF builds | [gohumanize/gohumanize-open-humanizer](https://huggingface.co/gohumanize/gohumanize-open-humanizer) |
 | Dataset, 3,257 pairs (CC-BY 4.0) | [gohumanize/gohumanize-open-humanizer-dataset](https://huggingface.co/datasets/gohumanize/gohumanize-open-humanizer-dataset) |
 | Code and full pipeline | [GoHumanize-ai/gohumanize-open-humanizer](https://github.com/GoHumanize-ai/gohumanize-open-humanizer) |
 | Write-up: every step, service and result | [docs/paper.md](https://github.com/GoHumanize-ai/gohumanize-open-humanizer/blob/main/docs/paper.md) |
