@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.GoHumanize-ai/gohumanize-open-humanizer-mcp",
   "title": "GoHumanize Open Humanizer",
-  "description": "Rewrite AI-styled text into natural human prose with an open Qwen3-4B fine-tune trained on public-domain books.",
+  "description": "Rewrite AI-styled text into natural writing with a fine-tune model.",
   "websiteUrl": "https://gohumanize.ai/open-model",
   "repository": {
     "url": "https://github.com/GoHumanize-ai/gohumanize-open-humanizer-mcp",
