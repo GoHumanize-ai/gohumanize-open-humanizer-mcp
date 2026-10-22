@@ -249,7 +249,7 @@ server.registerTool(
     text(
       [
         'GoHumanize Open Humanizer (educational open model, Apache-2.0).',
-        'Base: Qwen3-4B, fully fine-tuned on 2,957 pairs of AI-styled text -> public-domain human prose from Project Gutenberg books and US federal agencies.',
+        'Base: Qwen3-4B, fully fine-tuned on 2,629 pairs of AI-styled text -> public-domain human prose from Project Gutenberg books and US federal agencies.',
         'Dataset (CC-BY 4.0), model weights, GGUF, training code, evaluation and a full write-up are linked from https://gohumanize.ai/open-model',
         'It is separate from the production models used by GoHumanize.ai and makes no claim about passing AI detectors.',
         `This server is calling: ${BASE_URL} (model "${MODEL}").`,
